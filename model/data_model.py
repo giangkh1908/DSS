@@ -346,7 +346,7 @@ class AIModel:
         """Tạo khuyến nghị với chiến lược đầu tư đa dạng sản phẩm"""
         
         # HARDCODE API KEY - THAY ĐỔI NÀY
-        GEMINI_API_KEY = "AIzaSyBEcXnhRJRejSPX0I-sslL8cq39_HOHKnw"  # Thay bằng API key thực
+        # GEMINI_API_KEY = "AIzaSyBEcXnhRJRejSPX0I-sslL8cq39_HOHKnw"  # Thay bằng API key thực
         
         if not GEMINI_AVAILABLE:
             return [{
