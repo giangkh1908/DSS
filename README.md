@@ -39,9 +39,9 @@ Long/
 
 ## 🌐 4 Chức năng Chính
 
-### 🤖 1. Phân bổ Ngân sách AI (Mô hình 30-10-60)
+### 🤖 1. Phân bổ Ngân sách
 - **Controller**: `main_controller.py`
-- **Model**: `data_model.py` - AIModel class
+- **Model**: `data_model.py` 
 - **Input**: File CSV dữ liệu khách hàng  
 - **Output**: Kế hoạch phân bổ ngân sách 
 - **Format**: `InvoiceDate, Country, CustomerID, Quantity, UnitPrice`
@@ -99,7 +99,7 @@ Long/
 
 ## ✨ Tính năng Nổi bật
 
-### 🤖 AI Smart Recommendations (Phân bổ Ngân sách)
+### 🤖 Recommendations (Phân bổ Ngân sách)
 - **Mô hình 30-10-60**: Phân bổ thông minh theo tỷ lệ vàng
 - **Country-wise analysis**: Phân tích chi tiết từng quốc gia
 - **Product portfolio**: Tối ưu danh mục sản phẩm
