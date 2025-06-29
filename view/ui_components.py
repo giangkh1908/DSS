@@ -798,12 +798,12 @@ class MainPanelComponents:
     @staticmethod
     def display_exclusion_lists(available_countries):
         """Hiển thị danh sách loại trừ trong main panel"""
-        st.markdown("""
-        <div class="config-section">
-            <h3>🚫 Danh Sách Loại Trừ</h3>
-            <p>Chọn các quốc gia hoặc sản phẩm không muốn đưa vào phân tích</p>
-        </div>
-        """, unsafe_allow_html=True)
+        # st.markdown("""
+        # <div class="config-section">
+        #     <h3>🚫 Danh Sách Loại Trừ</h3>
+        #     <p>Chọn các quốc gia hoặc sản phẩm không muốn đưa vào phân tích</p>
+        # </div>
+        # """, unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
         
