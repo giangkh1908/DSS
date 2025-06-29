@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import streamlit as st
 import time
-from model.data_processing_L import load_and_clean_data, load_and_clean_data_from_upload, filter_data, calculate_total_revenue, calculate_growth_rate, compare_total_revenue, analyze_seasonality, analyze_country_performance
+from model.data_processing_L import load_and_clean_data, load_and_clean_data_from_upload, filter_data, calculate_total_revenue, calculate_percentage_change, compare_total_revenue, analyze_seasonality, analyze_country_performance
 from model.analysis_L import *
 from view.plots_L import plot_results, plot_revenue_comparison_ratios
 
@@ -83,7 +83,7 @@ def main():
         time.sleep(0.01)
     with st.spinner("Đang tính toán kết quả..."):
         pivot_table = calculate_total_revenue(df_filtered)
-        growth_rate = calculate_growth_rate(pivot_table)
+        growth_rate = calculate_percentage_change(pivot_table)
         total_revenue = compare_total_revenue(pivot_table)
         monthly_revenue, peak_months, quarterly_proportion = analyze_seasonality(df_filtered)
         country_metrics = analyze_country_performance(df_filtered)
