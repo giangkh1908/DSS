@@ -588,10 +588,10 @@ Dựa trên phân tích {len(allocation_df)} quốc gia với tổng ngân sách
         """Tạo gợi ý đầu tư chi tiết với công thức 30-10-60"""
         suggestions = "**💰 GỢI Ý ĐẦU TƯ CHI TIẾT - MÔ HÌNH 30-10-60:**\n\n"
         
-        # Phân tích top 3 quốc gia
-        top_3_countries = allocation_df.head(3)
+        # Phân tích top 2 quốc gia
+        top_2_countries = allocation_df.head(2)
         
-        for idx, (_, country) in enumerate(top_3_countries.iterrows(), 1):
+        for idx, (_, country) in enumerate(top_2_countries.iterrows(), 1):
             country_name = country['Country']
             country_budget = country['Allocated_Budget']
             country_products = country.get('Top_Products', [])
@@ -607,50 +607,22 @@ Dựa trên phân tích {len(allocation_df)} quốc gia với tổng ngân sách
                 growth_budget = country_budget * 0.10  # 10% cho sản phẩm tiềm năng
                 diversify_budget = country_budget * 0.60  # 60% cho đa dạng hóa
                 
-                # Sản phẩm chủ lực (top 1)
+                # Sản phẩm chủ lực (top 1) - chỉ hiện tên sản phẩm
                 core_product = country_products[0]
-                suggestions += f"**📈 30% SẢN PHẨM CHỦ LỰC (${core_budget:,.0f}):\n"
-                suggestions += f"   SP: {core_product['StockCode']}\n"
-                suggestions += f"   Tên: {core_product['Description'][:40]}\n"
-                suggestions += f"   Doanh thu hiện tại: ${core_product ['Total_Revenue']}\n"
-                suggestions += f"   Lý do: Sản phẩm có doanh thu cao nhất, ổn định trong {time_frame_months} tháng\n"
-                suggestions += f"   Chiến lược: Tăng cường marketing, mở rộng kênh phân phối\n\n"
+                suggestions += f"**📈 30% SẢN PHẨM CHỦ LỰC: {core_product['Description'][:40]}... (${core_budget:,.0f})**\n"
+                suggestions += f"   • Lý do: Sản phẩm có doanh thu cao nhất, ổn định trong {time_frame_months} tháng\n\n"
                 
-                # Sản phẩm tiềm năng (top 2 nếu có)
+                # Sản phẩm tiềm năng (top 2 nếu có) - chỉ hiện tên sản phẩm
                 if len(country_products) > 1:
                     growth_product = country_products[1]
-                    suggestions += f"**🚀 10% SẢN PHẨM TIỀM NĂNG (${growth_budget:,.0f}):\n"
-                    suggestions += f"   • SP: {growth_product['StockCode']}\n"
-                    suggestions += f"   • Tên: {growth_product['Description'][:40]}\n"
-                    suggestions += f"   • Doanh thu hiện tại: ${growth_product['Total_Revenue']}\n"
-                    suggestions += f"   • Lý do: Có tiềm năng tăng trưởng, conversion rate tốt\n"
-                    suggestions += f"   • Chiến lược: Test marketing campaigns, tối ưu pricing\n\n"
+                    suggestions += f"**🚀 10% SẢN PHẨM TIỀM NĂNG: {growth_product['Description'][:40]}... (${growth_budget:,.0f})**\n"
+                    suggestions += f"   • Lý do: Có tiềm năng tăng trưởng, conversion rate tốt\n\n"
                 else:
-                    suggestions += f"**🚀 10% SẢN PHẨM TIỀM NĂNG (${growth_budget:,.0f}):**\n"
-                    suggestions += f"   • Phát triển sản phẩm phụ của {core_product['StockCode']}\n"
-                    suggestions += f"   • Test thị trường với sản phẩm tương tự\n\n"
+                    suggestions += f"**🚀 10% SẢN PHẨM TIỀM NĂNG (${growth_budget:,.0f})**\n"
+                    suggestions += f"   • Lý do: Phát triển sản phẩm phụ của {core_product['StockCode']}\n\n"
                 
-                # Đa dạng hóa (các sản phẩm còn lại)
-                remaining_products = country_products[2:] if len(country_products) > 2 else []
-                suggestions += f"**🎯 60% ĐA DẠNG HÓA DANH MỤC (${diversify_budget:,.0f}):**\n"
-                
-                if remaining_products:
-                    # total_remaining_revenue = sum(p['Total_Revenue'] for p in remaining_products)
-                    # suggestions += f"   • Số sản phẩm: {len(remaining_products)} sản phẩm\n"
-                    # suggestions += f"   • Tổng doanh thu: ${total_remaining_revenue:,.0f}\n"
-                    # suggestions += f"   • Ngân sách mỗi SP: ${diversify_budget/len(remaining_products):,.0f}\n"
-                    
-                    # Liệt kê top 3 sản phẩm đa dạng hóa
-                    # for i, product in enumerate(remaining_products[:3], 1):
-                    #     suggestions += f"     + SP{i}: {product['StockCode']} - DT ${product['Total_Revenue']:,.0f}\n"
-                    
-                    if len(remaining_products) > 3:
-                        suggestions += f"     + ...và {len(remaining_products)-3} sản phẩm khác\n"
-                else:
-                    suggestions += f"   • Phát triển 3-5 sản phẩm mới từ nghiên cứu thị trường\n"
-                    # suggestions += f"   • Ngân sách R&D cho innovation: ${diversify_budget*0.4:,.0f}\n"
-                    # suggestions += f"   • Ngân sách test marketing: ${diversify_budget*0.6:,.0f}\n"
-                
+                # Đa dạng hóa - chỉ hiện text đơn giản
+                suggestions += f"**🎯 60% ĐA DẠNG HÓA DANH MỤC (${diversify_budget:,.0f})**\n"
                 suggestions += f"   • Lý do: Giảm rủi ro phụ thuộc vào 1-2 sản phẩm chính\n\n"
             else:
                 suggestions += f"**⚠️ CHƯA CÓ DỮ LIỆU SẢN PHẨM CHI TIẾT**\n"
@@ -660,8 +632,8 @@ Dựa trên phân tích {len(allocation_df)} quốc gia với tổng ngân sách
         
         # Tổng kết hành động
         suggestions += f"**🎯 HÀNH ĐỘNG ĐỀ XUẤT TỔNG THỂ:**\n"
-        suggestions += f"1. **Tập trung 30%** vào {len(top_3_countries)} sản phẩm chủ lực có ROI cao nhất\n"
-        suggestions += f"2. **Đầu tư 10%** để phát triển {len(top_3_countries)} sản phẩm tiềm năng mới\n"
+        suggestions += f"1. **Tập trung 30%** vào {len(top_2_countries)} sản phẩm chủ lực có ROI cao nhất\n"
+        suggestions += f"2. **Đầu tư 10%** để phát triển {len(top_2_countries)} sản phẩm tiềm năng mới\n"
         suggestions += f"3. **Phân bổ 60%** cho đa dạng hóa và giảm rủi ro concentration\n"
         suggestions += f"4. Thiết lập KPIs theo dõi hiệu quả từng nhóm sản phẩm\n"
         suggestions += f"5. Review và điều chỉnh tỷ lệ hàng quý dựa trên performance thực tế"

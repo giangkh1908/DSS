@@ -141,7 +141,7 @@ class UIComponents:
         
         with config_col3:
             st.info(f"🚫 **Quốc gia loại trừ:** {len(excluded_countries)}")
-            st.info(f"🚫 **Sản phẩm loại trừ:** {len(excluded_products)}")
+            # st.info(f"🚫 **Sản phẩm loại trừ:** {len(excluded_products)}")
     
     @staticmethod
     def display_selected_countries(selected_countries, country_stats):
@@ -481,10 +481,10 @@ class UIComponents:
         
         for recommendation in ai_recommendations:
             # Hiển thị khuyến nghị chính
-            st.markdown("### 📊 Phân Tích Tổng Quan")
-            st.write(recommendation['content'])
+            # st.markdown("### 📊 Phân Tích Tổng Quan")
+            # st.write(recommendation['content'])
             
-            st.markdown("---")
+            # st.markdown("---")
             
             # Hiển thị gợi ý đầu tư với expander giống bên phân tích doanh thu
             with st.expander("💰 GỢI Ý ĐẦU TƯ", expanded=False):
@@ -819,17 +819,17 @@ class MainPanelComponents:
                 st.warning(f"⚠️ Sẽ loại trừ {len(excluded_countries)} quốc gia")
         
         with col2:
-            st.markdown("**📦 Sản phẩm loại trừ:**")
-            excluded_products_input = st.text_area(
-                "Mã sản phẩm (mỗi dòng một mã):",
-                help="Nhập mã sản phẩm không muốn phân tích, mỗi dòng một mã",
-                height=100,
-                placeholder="Ví dụ:\nPOST\nDOT\nCRUK"
-            )
-            excluded_products = [p.strip() for p in excluded_products_input.split('\n') if p.strip()]
+            # st.markdown("**📦 Sản phẩm loại trừ:**")
+            # excluded_products_input = st.text_area(
+            #     "Mã sản phẩm (mỗi dòng một mã):",
+            #     help="Nhập mã sản phẩm không muốn phân tích, mỗi dòng một mã",
+            #     height=100,
+            #     placeholder="Ví dụ:\nPOST\nDOT\nCRUK"
+            # )
+            excluded_products = []
             
-            if excluded_products:
-                st.warning(f"⚠️ Sẽ loại trừ {len(excluded_products)} sản phẩm")
+            # if excluded_products:
+            #     st.warning(f"⚠️ Sẽ loại trừ {len(excluded_products)} sản phẩm")
         
         return excluded_countries, excluded_products
     
