@@ -42,7 +42,7 @@ class DolView:
             
             # Variable Cost Input
             variable_cost = st.number_input(
-                "Chi phí biến đổi:",
+                "Chi phí biến đổi($):",
                 min_value=0.0,
                 value=10.0,
                 step=0.1,
@@ -51,7 +51,7 @@ class DolView:
             
             # Fixed Cost Input
             fixed_cost = st.number_input(
-                "Chi phí cố định:",
+                "Chi phí cố định($):",
                 min_value=0.0,
                 value=1000.0,
                 step=10.0,
