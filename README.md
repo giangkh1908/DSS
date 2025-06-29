@@ -39,7 +39,7 @@ Long/
 
 ## 🌐 4 Chức năng Chính
 
-### 🤖 1. Phân bổ Ngân sách AI (Mô hình 30-10-60)
+### 🤖 1. Phân bổ Ngân sách
 - **Controller**: `main_controller.py`
 - **Model**: `data_model.py` - AIModel class
 - **Input**: File CSV dữ liệu khách hàng  
