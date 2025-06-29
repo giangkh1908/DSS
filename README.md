@@ -41,7 +41,7 @@ Long/
 
 ### 🤖 1. Phân bổ Ngân sách
 - **Controller**: `main_controller.py`
-- **Model**: `data_model.py` - AIModel class
+- **Model**: `data_model.py` 
 - **Input**: File CSV dữ liệu khách hàng  
 - **Output**: Kế hoạch phân bổ ngân sách 
 - **Format**: `InvoiceDate, Country, CustomerID, Quantity, UnitPrice`
