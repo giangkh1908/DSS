@@ -477,54 +477,55 @@ class UIComponents:
             return
         
         st.markdown("## 🤖 Khuyến Nghị Chiến Lược")
-        st.markdown("*Phân tích thông minh và đề xuất chiến lược đầu tư tối ưu*")
+        st.markdown("*Hệ thống thông minh phân tích dữ liệu và đề xuất phân bổ ngân sách tối ưu*")
         
         for recommendation in ai_recommendations:
-            # Hiển thị khuyến nghị chính
-            # st.markdown("### 📊 Phân Tích Tổng Quan")
-            # st.write(recommendation['content'])
-            
-            # st.markdown("---")
-            
-            # Hiển thị gợi ý đầu tư với expander giống bên phân tích doanh thu
-            with st.expander("💰 GỢI Ý ĐẦU TƯ", expanded=False):
+            # Hiển thị gợi ý chiến lược với expander
+            with st.expander("💰 GỢI Ý CHIẾN LƯỢC", expanded=False):
                 st.write(recommendation['investment_suggestion'])
             
-            # Hiển thị dự báo với expander
+            # Hiển thị dự báo với expander - tập trung vào kết quả
             with st.expander("📈 DỰ BÁO HIỆU QUẢ", expanded=False):
                 st.write(recommendation['forecast'])
                 
-                # Thêm metrics cho dự báo (giống như bên phân tích doanh thu)
-                col1, col2 = st.columns(2)
-                
-                # Parse ROI numbers từ content để hiển thị metrics
-                content = recommendation['forecast']
-                try:
-                    # Extract ROI values từ text
-                    import re
-                    roi_matches = re.findall(r'(\d+\.?\d*)%', content)
-                    if len(roi_matches) >= 2:
-                        base_roi = float(roi_matches[0])
-                        enhanced_roi = float(roi_matches[1])
-                        
-                        with col1:
-                            st.metric(
-                                label="Giữ nguyên chiến lược",
-                                value=f"{base_roi:.1f}%",
-                                delta=f"{base_roi:.1f}% ROI dự kiến"
-                            )
-                        with col2:
-                            st.metric(
-                                label="Tăng cường đầu tư 20%",
-                                value=f"{enhanced_roi:.1f}%",
-                                delta=f"{enhanced_roi - base_roi:+.1f}% so với hiện tại"
-                            )
-                except:
-                    # Fallback nếu không parse được
-                    with col1:
-                        st.info("📊 **Chiến lược hiện tại**\nDuy trì phân bổ theo khuyến nghị")
-                    with col2:
-                        st.info("🚀 **Chiến lược tăng cường**\nTăng đầu tư vào top markets")
+                # Bỏ phần metrics comparison
+                # col1, col2 = st.columns(2)
+                # 
+                # content = recommendation['forecast']
+                # try:
+                #     import re
+                #     # Tìm ROI của chiến lược tập trung và phân bổ đều
+                #     roi_matches = re.findall(r'(\d+\.?\d*)%', content)
+                #     if len(roi_matches) >= 2:
+                #         strategy_roi = float(roi_matches[0])
+                #         equal_roi = float(roi_matches[1])
+                #         
+                #         with col1:
+                #             st.metric(
+                #                 label="Chiến lược tập trung",
+                #                 value=f"{strategy_roi:.1f}%",
+                #                 delta=f"ROI từ 2 quốc gia hàng đầu"
+                #             )
+                #         with col2:
+                #             st.metric(
+                #                 label="Lợi thế so với phân bổ đều",
+                #                 value=f"+{strategy_roi - equal_roi:.1f}%",
+                #                 delta=f"Cao hơn {((strategy_roi/equal_roi - 1) * 100):+.1f}%"
+                #             )
+                #     else:
+                #         # Fallback đơn giản
+                #         with col1:
+                #             st.info("🎯 **Kết quả dự kiến**\nROI tối ưu từ chiến lược tập trung")
+                #         with col2:
+                #             st.info("📊 **Lợi thế**\nCao hơn 15-25% so với phân bổ đều")
+                # 
+                # except:
+                #     # Fallback nếu có lỗi
+                #     col1, col2 = st.columns(2)
+                #     with col1:
+                #         st.info("🎯 **ROI dự kiến**\n- Tăng 20% so với hiện tại\n- Hoàn vốn nhanh hơn")
+                #     with col2:
+                #         st.info("📈 **Hiệu quả**\n- Tập trung nguồn lực\n- Giảm rủi ro phân tán")
     
     @staticmethod
     def display_download_section(allocation_df, time_frame_months, ai_recommendations):
