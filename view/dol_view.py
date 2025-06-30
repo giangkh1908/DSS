@@ -42,7 +42,7 @@ class DolView:
             
             # Variable Cost Input
             variable_cost = st.number_input(
-                "Chi phí biến đổi($):",
+                "Chi phí biến đổi:",
                 min_value=0.0,
                 value=10.0,
                 step=0.1,
@@ -51,7 +51,7 @@ class DolView:
             
             # Fixed Cost Input
             fixed_cost = st.number_input(
-                "Chi phí cố định($):",
+                "Chi phí cố định:",
                 min_value=0.0,
                 value=1000.0,
                 step=10.0,
@@ -120,7 +120,8 @@ class DolView:
     
     def render_calculate_button(self) -> bool:
         """Render calculate button and return if clicked"""
-        return st.button("Tính DOL", type="primary", use_container_width=True)
+        disabled = 'uploaded_data_path' not in st.session_state or not st.session_state['uploaded_data_path']
+        return st.button("Tính DOL", type="primary", use_container_width=True, disabled=disabled)
     
     def render_results_header(self):
         """Render results page header"""

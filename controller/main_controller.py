@@ -1,6 +1,7 @@
 import streamlit as st
 from model.data_model import DataModel, AIModel
 from view.ui_components import UIComponents, MainPanelComponents
+import os
 
 class MainController:
     """Controller chính điều khiển luồng ứng dụng"""
@@ -19,19 +20,16 @@ class MainController:
     
     def _handle_main_logic(self):
         """Xử lý logic chính của ứng dụng"""
-        uploaded_file = MainPanelComponents.display_file_uploader()
-        
-        if uploaded_file is not None:
-            self._handle_file_uploaded(uploaded_file)
+        data_path = st.session_state.get('uploaded_data_path', None)
+        if data_path is not None and os.path.exists(data_path):
+            self._handle_file_uploaded(data_path)
         else:
-            UIComponents.display_welcome_screen()
+            st.warning("⚠️ Vui lòng upload file dữ liệu ở dashboard để sử dụng các chức năng phân tích!")
     
-    def _handle_file_uploaded(self, uploaded_file):
-        """Xử lý khi file được upload"""
+    def _handle_file_uploaded(self, data_path):
+        """Xử lý khi file được upload (data_path)"""
         time_frame_months = MainPanelComponents.display_time_frame_selector()
-        
-        df_clean = DataModel.load_and_clean_data(uploaded_file, time_frame_months)
-        
+        df_clean = DataModel.load_and_clean_data(data_path, time_frame_months)
         if df_clean is not None:
             self._process_data_analysis(df_clean, time_frame_months)
     

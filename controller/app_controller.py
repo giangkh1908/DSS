@@ -18,14 +18,29 @@ class AppController:
             st.session_state.current_mode = None
         
     def run_application(self):
-        """Chạy ứng dụng với menu lựa chọn chức năng"""
+        """Chạy ứng dụng với menu lựa chọn chức năng hoặc từng chức năng riêng biệt"""
         st.set_page_config(
             page_title="DSS - Decision Support System",
             page_icon="📊",
             layout="wide",
             initial_sidebar_state="expanded"
         )
-        
+
+        # Nếu chưa chọn chức năng, chỉ hiển thị dashboard (header, chọn chức năng, welcome, bảng so sánh, ...)
+        if st.session_state.current_mode is None:
+            self._render_dashboard()
+        # Nếu đã chọn chức năng, chỉ hiển thị UI của chức năng đó (không render dashboard/header/welcome)
+        elif st.session_state.current_mode == "Phân bổ Ngân sách":
+            self._run_budget_allocation_mode()
+        elif st.session_state.current_mode == "Phân tích Doanh thu":
+            self._run_revenue_analysis_mode()
+        elif st.session_state.current_mode == "Phân tích Tháng":
+            self._run_monthly_revenue_mode()
+        elif st.session_state.current_mode == "Phân tích DOL":
+            self._run_dol_analysis_mode()
+    
+    def _render_dashboard(self):
+        """Render toàn bộ dashboard, header, chọn chức năng, welcome, bảng so sánh, ..."""
         # CSS tùy chỉnh
         st.markdown("""
         <style>
@@ -138,7 +153,7 @@ class AppController:
         }
         </style>
         """, unsafe_allow_html=True)
-        
+
         # Header chính
         st.markdown("""
         <div class="main-header">
@@ -146,21 +161,53 @@ class AppController:
             <p>Hệ thống hỗ trợ quyết định cho Marketing và Phân tích Doanh thu</p>
         </div>
         """, unsafe_allow_html=True)
-        
+
+        # File uploader chung
+        with st.container():
+            st.markdown("### 📁 Upload Dữ Liệu Phân Tích")
+            if 'uploaded_data_path' not in st.session_state or not os.path.exists(st.session_state['uploaded_data_path']):
+                uploaded_file = st.file_uploader(
+                    "Chọn file CSV của bạn",
+                    type=['csv'],
+                    help="File cần có các cột: InvoiceDate, Country, CustomerID, Quantity, UnitPrice"
+                )
+                if uploaded_file is not None:
+                    save_path = os.path.join('data', 'uploaded_data.csv')
+                    with open(save_path, 'wb') as f:
+                        f.write(uploaded_file.getbuffer())
+                    st.session_state['uploaded_data_path'] = save_path
+                    st.session_state['uploaded_file_name'] = uploaded_file.name
+                    st.success(f"✅ Đã upload: {uploaded_file.name}")
+            else:
+                file_name = st.session_state.get('uploaded_file_name', 'Chưa rõ')
+                col1, col2 = st.columns([8,1])
+                with col1:
+                    st.info(f"📂 Đang sử dụng file: {file_name}")
+                with col2:
+                    if st.button("❌", key="remove_uploaded_file", help="Gỡ file dữ liệu", use_container_width=True):
+                        del st.session_state['uploaded_data_path']
+                        if 'uploaded_file_name' in st.session_state:
+                            del st.session_state['uploaded_file_name']
+                        st.rerun()
+                # Cho phép upload lại file mới ngay cả khi đã có file
+                uploaded_file = st.file_uploader(
+                    "Thay thế file CSV",
+                    type=['csv'],
+                    help="Upload file mới để thay thế file hiện tại"
+                )
+                if uploaded_file is not None:
+                    save_path = os.path.join('data', 'uploaded_data.csv')
+                    with open(save_path, 'wb') as f:
+                        f.write(uploaded_file.getbuffer())
+                    st.session_state['uploaded_data_path'] = save_path
+                    st.session_state['uploaded_file_name'] = uploaded_file.name
+                    st.success(f"✅ Đã thay thế file: {uploaded_file.name}")
+
         # Header thanh ngang để chọn chức năng
         self._display_mode_selection()
-        
-        # Hiển thị chức năng được chọn
-        if st.session_state.current_mode == "Phân bổ Ngân sách":
-            self._run_budget_allocation_mode()
-        elif st.session_state.current_mode == "Phân tích Doanh thu":
-            self._run_revenue_analysis_mode()
-        elif st.session_state.current_mode == "Phân tích Tháng":
-            self._run_monthly_revenue_mode()
-        elif st.session_state.current_mode == "Phân tích DOL":
-            self._run_dol_analysis_mode()
-        else:
-            self._display_welcome_screen()
+
+        # Hiển thị màn hình hướng dẫn, bảng so sánh, ...
+        self._display_welcome_screen()
     
     def _display_mode_selection(self):
         """Hiển thị thanh ngang để chọn chức năng"""
@@ -488,7 +535,7 @@ class AppController:
             st.markdown("""
             <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
                         padding: 2rem; border-radius: 15px; margin-bottom: 2rem; color: white; text-align: center;">
-                <h2>� Phân tích Doanh thu Quốc gia</h2>
+                <h2>📈 Phân tích Doanh thu Quốc gia</h2>
                 <p>Phân tích chi tiết doanh thu theo từng quốc gia và xu hướng tăng trưởng</p>
             </div>
             """, unsafe_allow_html=True)

@@ -346,7 +346,7 @@ class AIModel:
         """Tạo khuyến nghị với chiến lược đầu tư đa dạng sản phẩm"""
         
         # HARDCODE API KEY - THAY ĐỔI NÀY
-        # GEMINI_API_KEY = "AIzaSyBEcXnhRJRejSPX0I-sslL8cq39_HOHKnw"  # Thay bằng API key thực
+        GEMINI_API_KEY = "AIzaSyBEcXnhRJRejSPX0I-sslL8cq39_HOHKnw"  # Thay bằng API key thực
         
         if not GEMINI_AVAILABLE:
             return [{
@@ -588,8 +588,8 @@ Dựa trên phân tích {len(allocation_df)} quốc gia với tổng ngân sách
         """Tạo gợi ý chiến lược ngắn gọn với phân bổ vốn cho 2 quốc gia hàng đầu"""
         suggestions = "**💰 GỢI Ý CHIẾN LƯỢC - PHÂN BỔ VỐN TỐI ÚU:**\n\n"
         
-        # Phân tích top 2 quốc gia
-        top_2_countries = allocation_df.head(2)
+        # Phân tích top 3 quốc gia
+        top_3_countries = allocation_df.head(3)
         
         # Tính tổng ngân sách cho 2 quốc gia hàng đầu
         total_top2_budget = top_2_countries['Allocated_Budget'].sum()

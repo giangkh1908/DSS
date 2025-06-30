@@ -12,25 +12,54 @@ def get_marketing_strategy(month_type, month_number):
 
 def display_marketing_recommendations(peak_month, low_month, stable_months, volatile_month=None):
     """
-    Hiển thị đầy đủ các gợi ý marketing
+    Hiển thị đầy đủ các gợi ý marketing (chi tiết)
     """
     recommendations = []
-    
-    # Tháng cao điểm
-    recommendations.append(get_marketing_strategy("peak", int(peak_month['Month'])))
-    
-    # Tháng thấp điểm  
-    recommendations.append(get_marketing_strategy("low", int(low_month['Month'])))
-    
-    # Tháng ổn định
+    # Nội dung tháng cao điểm ở gợi ý chiến lược marketing
+    recommendations.append(f"""### 🔥 Tháng cao điểm: Tháng {int(peak_month['Month'])}
+- **Giải thích:** Đây là tháng doanh thu đạt đỉnh, nhu cầu thị trường tăng mạnh (có thể do lễ hội, mùa vụ, hoặc chương trình khuyến mãi lớn).
+- **Mục tiêu:** Tối đa hóa doanh thu, tăng thị phần, tận dụng tối đa cơ hội.
+- **Hành động:**
+    - Đẩy mạnh quảng cáo đa kênh (Facebook, Google, Zalo, TikTok...)
+    - Tăng ngân sách marketing, ưu tiên các kênh chuyển đổi cao
+    - Mở rộng inventory, đảm bảo nguồn hàng
+    - Triển khai chương trình loyalty, tặng quà cho khách hàng lớn
+    - Tổ chức mini game, sự kiện viral để tăng nhận diện thương hiệu
+""")
+    # Nội dung tháng thấp điểm ở gợi ý chiến lược marketing
+    recommendations.append(f"""### ❄️ Tháng thấp điểm: Tháng {int(low_month['Month'])}
+- **Giải thích:** Doanh thu giảm mạnh, nhu cầu thị trường thấp (có thể do mùa vụ, tâm lý tiêu dùng).
+- **Mục tiêu:** Kích cầu, duy trì doanh số tối thiểu, giữ chân khách hàng.
+- **Hành động:**
+    - Tổ chức flash sale, giảm giá sốc theo khung giờ vàng
+    - Tạo combo deals, tặng kèm sản phẩm nhỏ
+    - Đẩy mạnh remarketing tới khách hàng cũ
+    - Tăng ưu đãi cho khách hàng thân thiết
+    - Thử nghiệm các chiến dịch marketing sáng tạo chi phí thấp
+""")
+    # Nội dung tháng ổn định ở gợi ý chiến lược marketing
     if stable_months:
         for month in stable_months:
-            recommendations.append(get_marketing_strategy("stable", month))
-    
-    # Tháng biến động
+            recommendations.append(f"""### ✅ Tháng ổn định: Tháng {month}
+- **Giải thích:** Doanh thu duy trì đều, không biến động lớn.
+- **Mục tiêu:** Duy trì hiệu quả, tối ưu chi phí, chuẩn bị cho các giai đoạn cao điểm.
+- **Hành động:**
+    - Duy trì chất lượng sản phẩm/dịch vụ
+    - Chạy các chiến dịch marketing nhỏ để test insight mới
+    - Tối ưu chi phí quảng cáo, tăng hiệu quả ROI
+    - Chuẩn bị kế hoạch cho tháng cao điểm tiếp theo
+""")
+    # Nội dung tháng biến động ở gợi ý chiến lược marketing
     if volatile_month:
-        recommendations.append(get_marketing_strategy("volatile", volatile_month))
-    
+        recommendations.append(f"""### ⚡ Tháng biến động mạnh: Tháng {volatile_month}
+- **Giải thích:** Doanh thu tăng/giảm đột biến so với tháng trước, có thể do yếu tố bất ngờ (thị trường, đối thủ, chính sách...)
+- **Mục tiêu:** Ổn định lại doanh số, tận dụng cơ hội hoặc giảm thiểu rủi ro.
+- **Hành động:**
+    - Phân tích nguyên nhân biến động (data, thị trường, đối thủ)
+    - Nếu tăng mạnh: Đẩy mạnh marketing, mở rộng quy mô, tăng sản lượng
+    - Nếu giảm mạnh: Tung ưu đãi khẩn cấp, flash sale, truyền thông giải thích
+    - Theo dõi sát các chỉ số, điều chỉnh chiến lược linh hoạt
+""")
     return recommendations
 
 def generate_detailed_marketing_plan(monthly_revenue, product_data=None):
@@ -47,50 +76,50 @@ def generate_detailed_marketing_plan(monthly_revenue, product_data=None):
     }
     
     # Phân tích theo quý
-    quarterly_revenue = {}
-    for i, month in enumerate(months):
-        quarter = f"Q{(month-1)//3 + 1}"
-        if quarter not in quarterly_revenue:
-            quarterly_revenue[quarter] = []
-        quarterly_revenue[quarter].append(revenues[i])
+#     quarterly_revenue = {}
+#     for i, month in enumerate(months):
+#         quarter = f"Q{(month-1)//3 + 1}"
+#         if quarter not in quarterly_revenue:
+#             quarterly_revenue[quarter] = []
+#         quarterly_revenue[quarter].append(revenues[i])
     
-    for quarter, rev_list in quarterly_revenue.items():
-        avg_revenue = sum(rev_list) / len(rev_list)
-        strategy = {
-            'quarter': quarter,
-            'avg_revenue': avg_revenue,
-            'strategy': _get_quarterly_strategy(quarter, avg_revenue, max(revenues))
-        }
-        marketing_plan['seasonal_strategies'].append(strategy)
+#     for quarter, rev_list in quarterly_revenue.items():
+#         avg_revenue = sum(rev_list) / len(rev_list)
+#         strategy = {
+#             'quarter': quarter,
+#             'avg_revenue': avg_revenue,
+#             'strategy': _get_quarterly_strategy(quarter, avg_revenue, max(revenues))
+#         }
+#         marketing_plan['seasonal_strategies'].append(strategy)
     
-    return marketing_plan
+#     return marketing_plan
 
-def _get_quarterly_strategy(quarter, avg_revenue, max_revenue):
-    """
-    Tạo chiến lược theo quý
-    """
-    performance_ratio = avg_revenue / max_revenue
+# def _get_quarterly_strategy(quarter, avg_revenue, max_revenue):
+#     """
+#     Tạo chiến lược theo quý
+#     """
+#     performance_ratio = avg_revenue / max_revenue
     
-    if quarter == "Q1":
-        if performance_ratio > 0.8:
-            return "Tận dụng momentum đầu năm với New Year campaigns"
-        else:
-            return "Recovery strategy sau holiday season, focus on customer retention"
-    elif quarter == "Q2":
-        if performance_ratio > 0.8:
-            return "Spring/Summer promotions, outdoor product focus"
-        else:
-            return "Mid-year boost campaigns, clearance sales"
-    elif quarter == "Q3":
-        if performance_ratio > 0.8:
-            return "Back-to-school campaigns, summer finale sales"
-        else:
-            return "Preparation for Q4, inventory buildup"
-    else:  # Q4
-        if performance_ratio > 0.8:
-            return "Holiday season maximization, premium pricing"
-        else:
-            return "Aggressive holiday promotions, bundle deals"
+#     if quarter == "Q1":
+#         if performance_ratio > 0.8:
+#             return "Tận dụng momentum đầu năm với New Year campaigns"
+#         else:
+#             return "Recovery strategy sau holiday season, focus on customer retention"
+#     elif quarter == "Q2":
+#         if performance_ratio > 0.8:
+#             return "Spring/Summer promotions, outdoor product focus"
+#         else:
+#             return "Mid-year boost campaigns, clearance sales"
+#     elif quarter == "Q3":
+#         if performance_ratio > 0.8:
+#             return "Back-to-school campaigns, summer finale sales"
+#         else:
+#             return "Preparation for Q4, inventory buildup"
+#     else:  # Q4
+#         if performance_ratio > 0.8:
+#             return "Holiday season maximization, premium pricing"
+#         else:
+#             return "Aggressive holiday promotions, bundle deals"
 
 def analyze_market_opportunities(monthly_revenue, country_data=None):
     """

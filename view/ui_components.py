@@ -141,7 +141,7 @@ class UIComponents:
         
         with config_col3:
             st.info(f"🚫 **Quốc gia loại trừ:** {len(excluded_countries)}")
-            # st.info(f"🚫 **Sản phẩm loại trừ:** {len(excluded_products)}")
+            st.info(f"🚫 **Sản phẩm loại trừ:** {len(excluded_products)}")
     
     @staticmethod
     def display_selected_countries(selected_countries, country_stats):
@@ -480,8 +480,14 @@ class UIComponents:
         st.markdown("*Hệ thống thông minh phân tích dữ liệu và đề xuất phân bổ ngân sách tối ưu*")
         
         for recommendation in ai_recommendations:
-            # Hiển thị gợi ý chiến lược với expander
-            with st.expander("💰 GỢI Ý CHIẾN LƯỢC", expanded=False):
+            # Hiển thị khuyến nghị chính
+            st.markdown("### 📊 Phân Tích Tổng Quan")
+            st.write(recommendation['content'])
+            
+            st.markdown("---")
+            
+            # Hiển thị gợi ý đầu tư với expander giống bên phân tích doanh thu
+            with st.expander("💰 GỢI Ý ĐẦU TƯ", expanded=False):
                 st.write(recommendation['investment_suggestion'])
             
             # Hiển thị dự báo với expander - tập trung vào kết quả
@@ -752,28 +758,6 @@ class MainPanelComponents:
     """Class chứa các component cho main panel (thay thế sidebar)"""
     
     @staticmethod
-    def display_file_uploader():
-        """Hiển thị file uploader trong main panel"""
-        st.markdown("""
-        <div class="config-section">
-            <h3>📁 Upload Dữ Liệu</h3>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            uploaded_file = st.file_uploader(
-                "Chọn file CSV dữ liệu khách hàng", 
-                type=['csv'],
-                help="Upload file CSV chứa dữ liệu bán hàng với các cột: InvoiceDate, Country, CustomerID, Quantity, UnitPrice"
-            )
-            
-            if uploaded_file is not None:
-                st.success(f"✅ Đã upload: {uploaded_file.name}")
-                
-        return uploaded_file
-    
-    @staticmethod
     def display_time_frame_selector():
         """Hiển thị selector cho khung thời gian trong main panel"""
         st.markdown("""
@@ -799,12 +783,12 @@ class MainPanelComponents:
     @staticmethod
     def display_exclusion_lists(available_countries):
         """Hiển thị danh sách loại trừ trong main panel"""
-        # st.markdown("""
-        # <div class="config-section">
-        #     <h3>🚫 Danh Sách Loại Trừ</h3>
-        #     <p>Chọn các quốc gia hoặc sản phẩm không muốn đưa vào phân tích</p>
-        # </div>
-        # """, unsafe_allow_html=True)
+        st.markdown("""
+        <div class="config-section">
+            <h3>🚫 Danh Sách Loại Trừ</h3>
+            <p>Chọn các quốc gia hoặc sản phẩm không muốn đưa vào phân tích</p>
+        </div>
+        """, unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
         
@@ -820,17 +804,17 @@ class MainPanelComponents:
                 st.warning(f"⚠️ Sẽ loại trừ {len(excluded_countries)} quốc gia")
         
         with col2:
-            # st.markdown("**📦 Sản phẩm loại trừ:**")
-            # excluded_products_input = st.text_area(
-            #     "Mã sản phẩm (mỗi dòng một mã):",
-            #     help="Nhập mã sản phẩm không muốn phân tích, mỗi dòng một mã",
-            #     height=100,
-            #     placeholder="Ví dụ:\nPOST\nDOT\nCRUK"
-            # )
-            excluded_products = []
+            st.markdown("**📦 Sản phẩm loại trừ:**")
+            excluded_products_input = st.text_area(
+                "Mã sản phẩm (mỗi dòng một mã):",
+                help="Nhập mã sản phẩm không muốn phân tích, mỗi dòng một mã",
+                height=100,
+                placeholder="Ví dụ:\nPOST\nDOT\nCRUK"
+            )
+            excluded_products = [p.strip() for p in excluded_products_input.split('\n') if p.strip()]
             
-            # if excluded_products:
-            #     st.warning(f"⚠️ Sẽ loại trừ {len(excluded_products)} sản phẩm")
+            if excluded_products:
+                st.warning(f"⚠️ Sẽ loại trừ {len(excluded_products)} sản phẩm")
         
         return excluded_countries, excluded_products
     
@@ -929,9 +913,11 @@ class MainPanelComponents:
         st.markdown("---")
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
+            disabled = 'uploaded_data_path' not in st.session_state or not st.session_state['uploaded_data_path']
             return st.button(
                 "🚀 Bắt Đầu Phân Tích",
                 use_container_width=True,
                 type="primary",
-                help="Click để bắt đầu quá trình phân tích và phân bổ ngân sách"
+                help="Click để bắt đầu quá trình phân tích và phân bổ ngân sách",
+                disabled=disabled
             )

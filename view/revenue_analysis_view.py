@@ -8,9 +8,9 @@ class RevenueAnalysisView:
         """Render header của trang"""
         st.title("📊 Phân Tích Doanh Thu Theo Tháng")
     
-    def render_file_uploader(self):
-        """Render file uploader"""
-        return st.file_uploader("📁 Chọn file CSV để phân tích", type=['csv'])
+    #    def render_file_uploader(self):
+    #        """Render file uploader"""
+    #        return st.file_uploader("📁 Chọn file CSV để phân tích", type=['csv'])
     
     def render_controls(self, product_list, min_date, max_date):
         """Render các controls để chọn sản phẩm và thời gian"""
@@ -74,10 +74,15 @@ class RevenueAnalysisView:
             st.write(paragraph)
     
     def render_marketing_recommendations(self, recommendations):
-        """Render gợi ý chiến lược marketing"""
+        """Render gợi ý chiến lược marketing với expander cho từng tháng"""
         st.subheader("💡 Gợi ý chiến lược marketing")
         for rec in recommendations:
-            st.markdown(f"- {rec}")
+            # Tách tiêu đề (dòng đầu) và nội dung chi tiết
+            lines = rec.strip().split('\n', 1)
+            title = lines[0] if lines else "Gợi ý chiến lược"
+            detail = lines[1] if len(lines) > 1 else ""
+            with st.expander(title, expanded=False):
+                st.markdown(detail)
     
     def render_error_message(self, message):
         """Render error message"""
