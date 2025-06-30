@@ -21,16 +21,6 @@ class MonthlyRevenueView:
         </div>
         """, unsafe_allow_html=True)
     
-    def display_file_uploader(self):
-        """Hiển thị file uploader"""
-        st.markdown("### 📁 Upload Dữ liệu")
-        uploaded_file = st.file_uploader(
-            "Chọn file CSV để phân tích doanh thu theo tháng", 
-            type=['csv'],
-            help="File CSV cần có các cột: InvoiceDate, Description, Quantity, UnitPrice"
-        )
-        return uploaded_file
-    
     def display_product_selection(self, product_list):
         """Hiển thị dropdown chọn sản phẩm"""
         product = st.selectbox(

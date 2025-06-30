@@ -25,7 +25,7 @@ class DOLInputView:
         title_label.grid(row=0, column=0, columnspan=2, pady=(0, 30))
         
         # Variable Cost Input
-        ttk.Label(self.main_frame, text="Chi phí biến đổi($):", font=("Arial", 12)).grid(
+        ttk.Label(self.main_frame, text="Chi phí biến đổi:", font=("Arial", 12)).grid(
             row=1, column=0, sticky=tk.W, pady=5
         )
         self.variable_cost_var = tk.StringVar()
@@ -38,7 +38,7 @@ class DOLInputView:
         self.variable_cost_entry.grid(row=1, column=1, sticky=tk.W, pady=5, padx=(10, 0))
         
         # Fixed Cost Input
-        ttk.Label(self.main_frame, text="Chi phí cố định($):", font=("Arial", 12)).grid(
+        ttk.Label(self.main_frame, text="Chi phí cố định:", font=("Arial", 12)).grid(
             row=2, column=0, sticky=tk.W, pady=5
         )
         self.fixed_cost_var = tk.StringVar()

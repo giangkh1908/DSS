@@ -10,16 +10,9 @@ from view.plots_L import plot_results, plot_revenue_comparison_ratios
 
 def main():
     st.title("📈 Phân tích Doanh thu các Quốc gia theo thời gian")
-    
-    # File uploader thay vì đường dẫn cứng
-    uploaded_file = st.file_uploader(
-        "📁 Upload file dữ liệu",
-        type=['csv', 'xlsx'],
-        help="Chọn file CSV hoặc Excel chứa dữ liệu doanh thu"
-    )
-    
-    if uploaded_file is None:
-        st.info("👆 Vui lòng upload file dữ liệu để bắt đầu phân tích")
+    data_path = st.session_state.get('uploaded_data_path', None)
+    if data_path is None or not os.path.exists(data_path):
+        st.warning("⚠️ Vui lòng upload file dữ liệu ở dashboard để sử dụng các chức năng phân tích!")
         st.markdown("""
         ### 📋 Định dạng dữ liệu yêu cầu:
         File cần có các cột:
@@ -28,27 +21,14 @@ def main():
         - **Revenue**: Doanh thu (hoặc Quantity + UnitPrice)
         """)
         return
-    
-    progress_placeholder = st.empty()
-    progress_bar = progress_placeholder.progress(0, text="Đang tải dữ liệu...")
-    for percent in range(1, 11):
-        progress_bar.progress(percent, text=f"Đang tải dữ liệu ({percent*1}%)...")
-        time.sleep(0.02)
-    
     try:
         with st.spinner("Đang load và làm sạch dữ liệu..."):
-            # Xử lý file upload
-            if uploaded_file.name.endswith('.csv'):
-                df = load_and_clean_data_from_upload(uploaded_file, 'csv')
+            if data_path.endswith('.csv'):
+                df = load_and_clean_data_from_upload(open(data_path, 'rb'), 'csv')
             else:
-                df = load_and_clean_data_from_upload(uploaded_file, 'excel')
-            
-            for percent in range(11, 41):
-                progress_bar.progress(percent, text=f"Đã load dữ liệu ({percent}%)...")
-                time.sleep(0.01)
+                df = load_and_clean_data_from_upload(open(data_path, 'rb'), 'excel')
     except Exception as e:
         st.error(f"❌ Lỗi khi đọc file: {str(e)}")
-        progress_placeholder.empty()
         return
     st.sidebar.header("Cài đặt Phân tích")
     min_date = df['InvoiceDate'].min()
@@ -63,34 +43,17 @@ def main():
         index=0
     )
     revenue_threshold = st.sidebar.number_input("Ngưỡng doanh thu (£)", min_value=0.0, value=0.0, step=1000.0)
-    for percent in range(41, 61):
-        progress_bar.progress(percent, text=f"Đang lọc dữ liệu ({percent}%)...")
-        time.sleep(0.01)
     with st.spinner("Đang lọc dữ liệu..."):
         df_filtered = filter_data(df, start_date, end_date, selected_countries, revenue_threshold)
-        for percent in range(61, 81):
-            progress_bar.progress(percent, text=f"Đã lọc dữ liệu ({percent}%)...")
-            time.sleep(0.01)
     if df_filtered.empty:
         st.warning("Không có dữ liệu phù hợp với các tiêu chí đã chọn.")
-        for percent in range(81, 101):
-            progress_bar.progress(percent, text=f"Hoàn thành ({percent}%)")
-            time.sleep(0.01)
-        progress_placeholder.empty()
         return
-    for percent in range(81, 91):
-        progress_bar.progress(percent, text=f"Đang tính toán kết quả ({percent}%)...")
-        time.sleep(0.01)
     with st.spinner("Đang tính toán kết quả..."):
         pivot_table = calculate_total_revenue(df_filtered)
         growth_rate = calculate_percentage_change(pivot_table)
         total_revenue = compare_total_revenue(pivot_table)
         monthly_revenue, peak_months, quarterly_proportion = analyze_seasonality(df_filtered)
         country_metrics = analyze_country_performance(df_filtered)
-        for percent in range(91, 101):
-            progress_bar.progress(percent, text=f"Hoàn thành ({percent}%)")
-            time.sleep(0.01)
-    progress_placeholder.empty()
     st.header("Kết quả Phân tích")
     if analysis_type == 'Tổng doanh thu':
         st.subheader("Tổng Doanh thu Theo Thời gian")
@@ -135,7 +98,7 @@ def main():
             st.write("**HÀNH ĐỘNG ĐỀ XUẤT:**")
             for act in action_suggestions_growth_rate():
                 st.write(f"  - {act}")
-        st.markdown("---")
+        # st.markdown("---")
         with st.expander(":chart_with_upwards_trend: DỰ BÁO", expanded=False):
             trend, base_forecast, enhanced_forecast, explanation, top_country = estimate_growth_trend_growth_rate_one_year(growth_rate, country_metrics)
             col1, col2 = st.columns(2)

@@ -28,6 +28,10 @@ class DolController:
     def run(self):
         """Main method to run DOL analysis"""
         self.view.render_header()
+        data_path = st.session_state.get('uploaded_data_path', None)
+        if data_path is None or not os.path.exists(data_path):
+            st.warning("⚠️ Vui lòng upload file dữ liệu ở dashboard để sử dụng các chức năng phân tích!")
+            return
         
         # Navigation
         page = self.view.render_navigation(

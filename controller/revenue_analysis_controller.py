@@ -26,33 +26,27 @@ class RevenueAnalysisController:
     def run(self):
         """Chạy chức năng phân tích doanh thu"""
         self.view.render_header()
-        
-        uploaded_file = self.view.render_file_uploader()
-        
-        if uploaded_file is not None:
-            self._process_uploaded_file(uploaded_file)
+        data_path = st.session_state.get('uploaded_data_path', None)
+        if data_path is not None and os.path.exists(data_path):
+            self._process_uploaded_file(data_path)
         else:
-            self._handle_no_file_uploaded()
+            st.warning("⚠️ Vui lòng upload file dữ liệu ở dashboard để sử dụng các chức năng phân tích!")
     
-    def _process_uploaded_file(self, uploaded_file):
-        """Xử lý file đã upload"""
+    def _process_uploaded_file(self, file_path):
+        """Xử lý file đã upload (file_path)"""
         try:
-            data = load_data(uploaded_file)
+            data = load_data(file_path)
             data.columns = data.columns.str.strip()
             data = preprocess_data(data)
-
             product_list = sorted(data['Description'].dropna().unique())
             min_date = data['InvoiceDate'].min().date()
             max_date = data['InvoiceDate'].max().date()
-
             # Render controls
             product, start_date, end_date = self.view.render_controls(
                 product_list, min_date, max_date
             )
-            
             if product:
                 self._analyze_product(data, product, start_date, end_date)
-                
         except Exception as e:
             st.error(f"❌ Lỗi xử lý dữ liệu: {str(e)}")
     
@@ -86,7 +80,6 @@ class RevenueAnalysisController:
         # Tính toán các tháng đặc biệt
         revenues = monthly_revenue['Revenue'].tolist()
         months = monthly_revenue['Month'].astype(int).tolist()
-        
         # Tháng biến động mạnh
         max_pct = 0
         max_idx = None
@@ -98,9 +91,7 @@ class RevenueAnalysisController:
             if pct > max_pct:
                 max_pct = pct
                 max_idx = i
-        
         max_var_month = months[max_idx] if max_idx is not None and max_pct > 0.3 else None
-
         # Tháng ổn định
         avg = monthly_revenue['Revenue'].mean()
         lower = avg * 0.85
@@ -109,41 +100,21 @@ class RevenueAnalysisController:
             (monthly_revenue['Revenue'] >= lower) & (monthly_revenue['Revenue'] <= upper)
         ]['Month'].astype(int).tolist()
 
-        # Hiển thị các tháng đặc biệt
+        # Hiển thị các tháng đặc biệt (chỉ nút và giải thích ngắn)
         self.view.render_special_months(
             peak_month, low_month, max_var_month, stable_months
         )
 
         # Hiển thị phân tích xu hướng
-        st.subheader("📉 Phân tích xu hướng")
         trend_analysis = analyze_trend(monthly_revenue)
-        for paragraph in trend_analysis:
-            st.write(paragraph)
+        self.view.render_trend_analysis(trend_analysis)
 
-        # Hiển thị gợi ý chiến lược marketing
-        st.subheader("💡 Gợi ý chiến lược marketing")
+        # Hiển thị gợi ý chiến lược marketing (nội dung chi tiết)
         recommendations = display_marketing_recommendations(
             peak_month, low_month, stable_months, max_var_month
         )
-        for rec in recommendations:
-            st.markdown(f"- {rec}")
+        self.view.render_marketing_recommendations(recommendations)
     
     def _handle_no_file_uploaded(self):
-        """Xử lý khi chưa có file upload"""
-        st.info("👆 Vui lòng chọn file CSV để bắt đầu phân tích doanh thu!")
-        
-        sample_data_path = 'data/online_retail.csv'
-        if os.path.exists(sample_data_path):
-            st.info("💡 Hoặc sử dụng dữ liệu mẫu có sẵn")
-            if st.button("📂 Tải dữ liệu mẫu"):
-                st.session_state['use_sample_data'] = True
-                st.rerun()
-        
-        if st.session_state.get('use_sample_data', False):
-            try:
-                data = load_data(sample_data_path)
-                st.success("✅ Đã tải dữ liệu mẫu thành công!")
-                st.session_state['sample_data'] = data
-                st.rerun()
-            except Exception as e:
-                st.error(f"❌ Không thể tải dữ liệu mẫu: {str(e)}") 
+        """Không còn dùng nữa vì đã gom upload về dashboard"""
+        pass 
