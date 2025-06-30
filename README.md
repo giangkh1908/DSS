@@ -9,7 +9,7 @@ pip install -r requirements.txt
 ## 🎯 Chạy Ứng dụng
 
 ```bash
-streamlit run dss_fe.py
+python -m streamlit run dss_fe.py
 ```
 
 ## 🏗️ Cấu trúc Dự án
