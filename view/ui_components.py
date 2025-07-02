@@ -481,8 +481,8 @@ class UIComponents:
         
         for recommendation in ai_recommendations:
             # Hiển thị khuyến nghị chính
-            st.markdown("### 📊 Phân Tích Tổng Quan")
-            st.write(recommendation['content'])
+            # st.markdown("### 📊 Phân Tích Tổng Quan")
+            # st.write(recommendation['content'])
             
             st.markdown("---")
             
@@ -786,37 +786,23 @@ class MainPanelComponents:
         st.markdown("""
         <div class="config-section">
             <h3>🚫 Danh Sách Loại Trừ</h3>
-            <p>Chọn các quốc gia hoặc sản phẩm không muốn đưa vào phân tích</p>
+            <p>Chọn các quốc gia không muốn đưa vào phân tích</p>
         </div>
         """, unsafe_allow_html=True)
         
-        col1, col2 = st.columns(2)
+        # Chỉ giữ lại phần quốc gia loại trừ
+        st.markdown("**🌍 Quốc gia loại trừ:**")
+        excluded_countries = st.multiselect(
+            "Chọn quốc gia:",
+            available_countries,
+            help="Các quốc gia này sẽ bị loại khỏi phân tích và phân bổ ngân sách"
+        )
         
-        with col1:
-            st.markdown("**🌍 Quốc gia loại trừ:**")
-            excluded_countries = st.multiselect(
-                "Chọn quốc gia:",
-                available_countries,
-                help="Các quốc gia này sẽ bị loại khỏi phân tích và phân bổ ngân sách"
-            )
-            
-            if excluded_countries:
-                st.warning(f"⚠️ Sẽ loại trừ {len(excluded_countries)} quốc gia")
+        if excluded_countries:
+            st.warning(f"⚠️ Sẽ loại trừ {len(excluded_countries)} quốc gia")
         
-        with col2:
-            st.markdown("**📦 Sản phẩm loại trừ:**")
-            excluded_products_input = st.text_area(
-                "Mã sản phẩm (mỗi dòng một mã):",
-                help="Nhập mã sản phẩm không muốn phân tích, mỗi dòng một mã",
-                height=100,
-                placeholder="Ví dụ:\nPOST\nDOT\nCRUK"
-            )
-            excluded_products = [p.strip() for p in excluded_products_input.split('\n') if p.strip()]
-            
-            if excluded_products:
-                st.warning(f"⚠️ Sẽ loại trừ {len(excluded_products)} sản phẩm")
-        
-        return excluded_countries, excluded_products
+        # Trả về danh sách rỗng cho excluded_products
+        return excluded_countries, []
     
     @staticmethod
     def display_country_selection():
@@ -831,9 +817,7 @@ class MainPanelComponents:
                 [
                     "Doanh thu cao nhất",
                     "Nhiều đơn hàng nhất", 
-                    "Nhiều khách hàng nhất",
-                    "ROI tiềm năng cao nhất",
-                    "Tăng trưởng ổn định"
+                    "Nhiều khách hàng nhất"
                 ],
                 help="Cách thức lựa chọn quốc gia để phân bổ ngân sách"
             )

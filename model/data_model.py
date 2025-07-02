@@ -585,96 +585,89 @@ Dựa trên phân tích {len(allocation_df)} quốc gia với tổng ngân sách
     
     @staticmethod
     def _generate_detailed_investment_suggestions(allocation_df, total_budget, time_frame_months):
-        """Tạo gợi ý chiến lược ngắn gọn với phân bổ vốn cho 2 quốc gia hàng đầu"""
-        suggestions = "**💰 GỢI Ý CHIẾN LƯỢC - PHÂN BỔ VỐN TỐI ÚU:**\n\n"
-        
-        # Phân tích top 2 quốc gia
+        """Sinh khuyến nghị chiến lược đầu tư theo phân bổ vốn"""
+        suggestions = "\n\n"
+    
         top_2_countries = allocation_df.head(2)
-        
-        # Tính tổng ngân sách cho 2 quốc gia hàng đầu
         total_top2_budget = top_2_countries['Allocated_Budget'].sum()
         top2_percentage = (total_top2_budget / total_budget) * 100
-        
-        suggestions += f"**🎯 KHUYẾN NGHỊ CỦA HỆ THỐNG THÔNG MINH:**\n\n"
-        
-        # Chiến lược phân bổ
+
+        suggestions += f"**🎯 CHIẾN LƯỢC ĐẦU TƯ TỐI ƯU - HỆ THỐNG ĐỀ XUẤT:**\n\n"
+
         for idx, (_, country) in enumerate(top_2_countries.iterrows(), 1):
             country_name = country['Country']
             country_budget = country['Allocated_Budget']
             country_percentage = (country_budget / total_budget) * 100
             country_score = country['Overall_Score']
-            
-            suggestions += f"**🌍 {idx}. {country_name}: ${country_budget:,.0f} ({country_percentage:.1f}% tổng ngân sách)**\n"
-            suggestions += f"   • Lý do: Điểm đánh giá cao nhất ({country_score:.1f}/10), hiệu suất ổn định trong {time_frame_months} tháng\n"
-            suggestions += f"   • Chiến lược: {'Tập trung đầu tư chính' if idx == 1 else 'Hỗ trợ đầu tư phụ'} - ROI dự kiến cao\n\n"
         
-        # Tổng kết chiến lược
+            suggestions += f"**🌍 {idx}. {country_name}**  \n"
+            suggestions += f"• Ngân sách: **${country_budget:,.0f}** ({country_percentage:.1f}%)  \n"
+            suggestions += f"• Lý do: Điểm đánh giá cao nhất ({country_score:.1f}/10), hiệu suất ổn định suốt {time_frame_months} tháng  \n"
+            suggestions += f"• Vai trò chiến lược: {'Tăng trưởng chủ lực' if idx == 1 else 'Mở rộng quy mô'}  \n"
+            suggestions += f"• Thời gian đầu tư: **{'Tháng 1-3' if idx == 1 else 'Tháng 4-6'}**  \n"
+            suggestions += f"• Hành động: Tăng ngân sách marketing, thử nghiệm campaign, theo dõi CAC/ROI\n\n"
+
         remaining_budget = total_budget - total_top2_budget
         remaining_percentage = (remaining_budget / total_budget) * 100
         remaining_countries = len(allocation_df) - 2
-        
+
         if remaining_countries > 0:
-            suggestions += f"**⚖️ PHÂN BỔ CÒN LẠI:**\n"
-            suggestions += f"   • ${remaining_budget:,.0f} ({remaining_percentage:.1f}%) cho {remaining_countries} quốc gia khác\n"
-            suggestions += f"   • Mục đích: Đa dạng hóa rủi ro và thử nghiệm thị trường tiềm năng\n\n"
-        
-        suggestions += f"**🔍 TẠI SAO CHIẾN LƯỢC NÀY TỐI ÚU:**\n"
-        suggestions += f"1. **Tập trung thông minh:** {top2_percentage:.1f}% ngân sách vào 2 thị trường mạnh nhất\n"
-        suggestions += f"2. **Phân tích dữ liệu:** Dựa trên {time_frame_months} tháng dữ liệu thực tế, không phỏng đoán\n"
-        suggestions += f"3. **Cân bằng rủi ro:** Tối ưu hóa giữa tập trung và đa dạng hóa\n"
-        suggestions += f"5. **Linh hoạt:** Có thể tái phân bổ dựa trên performance tracking"
-        
+            suggestions += f"**⚖️ PHÂN BỔ CHO THỊ TRƯỜNG KHÁC:**\n"
+            suggestions += f"• Tổng ngân sách còn lại: **${remaining_budget:,.0f}** ({remaining_percentage:.1f}%)  \n"
+            suggestions += f"• Mục tiêu: Đa dạng hóa danh mục, thử nghiệm thị trường tiềm năng và hạn chế rủi ro đơn điểm  \n"
+            suggestions += f"• Cách tiếp cận: A/B test sản phẩm hoặc kênh, đánh giá phản ứng thị trường sau mỗi 2 tháng\n\n"
+
+            suggestions += f"**🧠 TẠI SAO CHIẾN LƯỢC NÀY HIỆU QUẢ:**\n"
+            suggestions += f"1. Tập trung thông minh: **{top2_percentage:.1f}%** ngân sách vào các thị trường có điểm đánh giá cao nhất  \n"
+            suggestions += f"2. Dữ liệu nền: Dựa hoàn toàn trên hiệu suất thực tế trong {time_frame_months} tháng  \n"
+            suggestions += f"3. Đa dạng rủi ro: Phân bổ linh hoạt sang các quốc gia phụ để tránh phụ thuộc  \n"
+            suggestions += f"4. Linh hoạt điều chỉnh: Có thể tái phân bổ theo tín hiệu hiệu suất hoặc sự kiện thị trường\n"
+
         return suggestions
+
     
     @staticmethod
     def _generate_detailed_forecast(allocation_df, total_budget, expected_roi, actual_roi, time_frame_months):
-        """Tạo dự báo hiệu quả ngắn gọn dựa trên chiến lược phân bổ vốn"""
-        
-        # Tính toán các chỉ số cơ bản
+        """Dự báo hiệu quả đầu tư theo chiến lược phân bổ vốn"""
+
         top_2_countries = allocation_df.head(2)
         total_top2_budget = top_2_countries['Allocated_Budget'].sum()
-        
-        forecast = "**📈 DỰ BÁO HIỆU QUẢ - DỰA TRÊN CHIẾN LƯỢC PHÂN BỔ:**\n\n"
-        
-        # Dự báo ROI cho 2 quốc gia chính
-        strategy_roi = actual_roi * 1.2  # 20% cải thiện từ chiến lược tập trung
+
+        strategy_roi = actual_roi * 1.2  # giả định cải thiện 20% nhờ chiến lược tập trung
         strategy_profit = total_top2_budget * (strategy_roi / 100)
-        
-        forecast += f"**🎯 KẾT QUẢ DỰ KIẾN SAU KHI PHÂN BỔ VỐN:**\n"
-        forecast += f"- ROI cho 2 quốc gia hàng đầu: **{strategy_roi:.1f}%**\n"
-        forecast += f"- Lợi nhuận từ top 2 quốc gia: **${strategy_profit:,.0f}**\n"
-        forecast += f"- Thời gian hoàn vốn dự kiến: **{12 / (strategy_roi / 100):.1f} tháng**\n\n"
-        
-        # So sánh với phân bổ đều
-        equal_roi = actual_roi * 0.85  # Giảm 15% nếu phân bổ đều
+
+        forecast = "**📊 DỰ BÁO HIỆU QUẢ THEO CHIẾN LƯỢC TẬP TRUNG:**\n\n"
+        forecast += f"• ROI kỳ vọng cho top 2 thị trường: **{strategy_roi:.1f}%**  \n"
+        forecast += f"• Lợi nhuận dự kiến: **${strategy_profit:,.0f}**  \n"
+        forecast += f"• Thời gian hoàn vốn (ước tính): **{12 / (strategy_roi / 100):.1f} tháng**  \n\n"
+
+        equal_roi = actual_roi * 0.85
         equal_profit = total_top2_budget * (equal_roi / 100)
         profit_advantage = strategy_profit - equal_profit
-        
-        forecast += f"**⚖️ SO SÁNH VỚI PHÂN BỔ ĐỀU:**\n"
-        forecast += f"- Chiến lược tập trung: **{strategy_roi:.1f}%** ROI\n"
-        forecast += f"- Phân bổ đều: **{equal_roi:.1f}%** ROI\n"
-        forecast += f"- Lợi thế chiến lược: **+${profit_advantage:,.0f}** lợi nhuận\n\n"
-        
-        # Kết quả cụ thể cho từng quốc gia
-        forecast += f"**🌍 KẾT QUẢ THEO QUỐC GIA:**\n"
+
+        forecast += f"**⚖️ SO SÁNH VỚI PHÂN BỔ ĐỀU:**\n\n"
+        forecast += f"• Phân bổ đều: ROI ước tính **{equal_roi:.1f}%**, lợi nhuận **${equal_profit:,.0f}** \n\n"
+        forecast += f"• Lợi thế của chiến lược hiện tại: **+${profit_advantage:,.0f}** lợi nhuận\n\n"
+
+        forecast += f"**📍 PHÂN TÍCH THEO QUỐC GIA:**\n\n"
         for idx, (_, country) in enumerate(top_2_countries.iterrows(), 1):
-            country_name = country['Country']
-            country_budget = country['Allocated_Budget']
-            country_profit = country_budget * (strategy_roi / 100)
-            
-            forecast += f"**{idx}. {country_name}:**\n"
-            forecast += f"   • Vốn đầu tư: ${country_budget:,.0f}\n"
-            forecast += f"   • Lợi nhuận dự kiến: ${country_profit:,.0f}\n"
-            forecast += f"   • Tổng thu về: ${country_budget + country_profit:,.0f}\n\n"
-        
-        # Khuyến nghị thực hiện
-        forecast += f"**💡 KHUYẾN NGHỊ:**\n"
+            name = country['Country']
+            budget = country['Allocated_Budget']
+            profit = budget * (strategy_roi / 100)
+            forecast += f"**{idx}. {name}**  \n"
+            forecast += f"• Ngân sách: ${budget:,.0f}  \n\n"
+            forecast += f"• Lợi nhuận dự kiến: ${profit:,.0f}  \n\n"
+            forecast += f"• Tổng thu về: ${budget + profit:,.0f}\n\n"
+
+        forecast += f"**💡 KHUYẾN NGHỊ TRIỂN KHAI:**\n"
         if strategy_roi > expected_roi:
-            forecast += f"✅ **NÊN TRIỂN KHAI** - ROI dự kiến ({strategy_roi:.1f}%) vượt mục tiêu ({expected_roi}%)\n"
+            forecast += f"✅ **NÊN TRIỂN KHAI** - ROI dự kiến ({strategy_roi:.1f}%) vượt mục tiêu ({expected_roi}%)  \n"
         else:
-            forecast += f"⚠️ **CẦN ĐIỀU CHỈNH** - ROI dự kiến ({strategy_roi:.1f}%) chưa đạt mục tiêu ({expected_roi}%)\n"
-        
-        forecast += f"• **Timeline:** 2-3 tháng focus {top_2_countries.iloc[0]['Country']}, 4-6 tháng scale {top_2_countries.iloc[1]['Country']}\n"
-        forecast += f"• **Theo dõi:** Track ROI hàng tháng và điều chỉnh nếu cần"
-        
+            forecast += f"⚠️ **CẦN XEM XÉT LẠI** - ROI dự kiến ({strategy_roi:.1f}%) thấp hơn mục tiêu ({expected_roi}%)  \n"
+
+        forecast += f"• Timeline:  \n"
+        forecast += f"   - Tháng 1-3: Tập trung đầu tư tại {top_2_countries.iloc[0]['Country']}  \n"
+        forecast += f"   - Tháng 4-6: Scale tại {top_2_countries.iloc[1]['Country']}  \n"
+        forecast += f"• Theo dõi hiệu suất hàng tháng, điều chỉnh ngân sách nếu ROI < 110% trong 2 tháng liên tiếp\n"
+
         return forecast
