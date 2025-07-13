@@ -123,7 +123,7 @@ DOL = Contribution Margin / (Contribution Margin - Fixed Cost)
 pip install -r requirements.txt
 
 # Chạy ứng dụng
-streamlit run dss_fe.py
+python -m streamlit run dss_fe.py
 ```
 
 ## 📊 Dependencies

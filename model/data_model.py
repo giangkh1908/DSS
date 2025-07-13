@@ -534,39 +534,23 @@ QUAN TRỌNG:
 
     @staticmethod
     def generate_static_strategy_recommendations(allocation_df, total_budget, expected_roi, time_frame_months):
-        """Tạo khuyến nghị chiến lược tĩnh với công thức 30-10-60 và dự báo chi tiết"""
+        """Tạo khuyến nghị chiến lược tĩnh với mô hình 70-20-10."""
         if len(allocation_df) == 0:
             return []
-        
+
         # Phân tích dữ liệu cơ bản
-        top_country = allocation_df.iloc[0]['Country']
-        top_budget = allocation_df.iloc[0]['Allocated_Budget']
-        top_percentage = (top_budget / total_budget) * 100
-        top_products = allocation_df.iloc[0].get('Top_Products', [])
-        
-        total_expected_profit = allocation_df['Expected_Profit'].sum()
-        actual_roi = (total_expected_profit / total_budget) * 100
-        
-        high_investment_countries = allocation_df[allocation_df['Investment_Level'].isin(['Rất Cao', 'Cao'])]
-        low_risk_countries = allocation_df[allocation_df['Risk_Level'] == 'Thấp']
-        
+        actual_roi = (allocation_df['Expected_Profit'].sum() / total_budget) * 100
+
         # Tạo nội dung khuyến nghị chính
-        main_recommendation = f"""**🎯 KHUYẾN NGHỊ CHIẾN LƯỢC CHÍNH:**
+        main_recommendation = f"""**🎯 TỔNG QUAN CHIẾN LƯỢC:**
 
-Dựa trên phân tích {len(allocation_df)} quốc gia với tổng ngân sách ${total_budget:,}, hệ thống đề xuất chiến lược phân bổ theo mô hình **30-10-60** nhằm tối ưu hóa hiệu quả đầu tư và đa dạng hóa rủi ro.
+Dựa trên phân tích {len(allocation_df)} quốc gia, hệ thống đề xuất mô hình 70-20-10 để tối đa hóa lợi nhuận và giảm thiểu rủi ro.
 
-**📊 ĐÁNH GIÁ TỔNG QUAN:**
-- Quốc gia được ưu tiên nhất: **{top_country}** ({top_percentage:.1f}% ngân sách)
-- ROI dự kiến thực tế: **{actual_roi:.1f}%** (mục tiêu: {expected_roi}%)
-- Số quốc gia đầu tư mạnh: **{len(high_investment_countries)}** quốc gia
-- Số quốc gia rủi ro thấp: **{len(low_risk_countries)}** quốc gia
+- **ROI dự kiến:** {actual_roi:.1f}%
+- **Tổng lợi nhuận dự kiến:** ${allocation_df['Expected_Profit'].sum():,.0f}
+"""
 
-**🔄 MÔ HÌNH PHÂN BỔ 30-10-60:**
-- **30%** cho sản phẩm chủ lực (doanh thu ổn định cao)
-- **10%** cho sản phẩm tiềm năng (cơ hội tăng trưởng)
-- **60%** cho đa dạng hóa danh mục (giảm thiểu rủi ro)"""
-
-        # Tạo phần gợi ý đầu tư chi tiết với công thức 30-10-60
+        # Tạo phần gợi ý đầu tư chi tiết
         investment_suggestions = AIModel._generate_detailed_investment_suggestions(
             allocation_df, total_budget, time_frame_months
         )
@@ -586,82 +570,71 @@ Dựa trên phân tích {len(allocation_df)} quốc gia với tổng ngân sách
     @staticmethod
 
     def _generate_detailed_investment_suggestions(allocation_df, total_budget, time_frame_months):
-        """Sinh khuyến nghị chiến lược đầu tư theo phân bổ vốn"""
-        suggestions = "\n\n"
+        """Sinh khuyến nghị chiến lược đầu tư theo mô hình 70-20-10."""
+        suggestions = "\n\n**🎯 CHIẾN LƯỢC ĐẦU TƯ 70-20-10:**\n\n"
 
-        top_2_countries = allocation_df.head(2)
-        total_top2_budget = top_2_countries['Allocated_Budget'].sum()
-        top2_percentage = (total_top2_budget / total_budget) * 100
+        # 70% cho thị trường cốt lõi
+        core_budget = total_budget * 0.7
+        core_countries_count = max(1, int(len(allocation_df) * 0.2))
+        core_countries = allocation_df.head(core_countries_count)
 
-        suggestions += f"**🎯 CHIẾN LƯỢC ĐẦU TƯ TỐI ƯU - HỆ THỐNG ĐỀ XUẤT:**\n\n"
+        suggestions += f"**1. Thị trường Cốt lõi (70% Ngân sách - ${core_budget:,.0f})**\n"
+        suggestions += f"   - **Tập trung:** {core_countries_count} quốc gia ({', '.join(core_countries['Country'].tolist())})\n"
+        suggestions += f"   - **Lý do:** Đây là các thị trường đã được chứng minh hiệu quả, có hiệu suất cao.\n"
+        suggestions += f"   - **Hành động:** Tập trung vào 3 sản phẩm hàng đầu cho mỗi quốc gia trong phân khúc này.\n\n"
 
-        # 1. Tập trung thị trường điểm cao
-        suggestions += f"1. **Tập trung phần lớn ngân sách vào các thị trường có điểm đánh giá cao**\n"
-        for idx, (_, country) in enumerate(top_2_countries.iterrows(), 1):
-            name = country['Country']
-            budget = country['Allocated_Budget']
-            percentage = (budget / total_budget) * 100
-            score = country['Overall_Score']
-            suggestions += f"\n   • 🌍 {name}: **${budget:,.0f}** ({percentage:.1f}%) - Điểm đánh giá: {score:.1f}/10\n\n"
-        suggestions += f"   → Tổng cộng: **{top2_percentage:.1f}%** ngân sách\n\n"
+        # 20% cho thị trường tăng trưởng
+        growth_budget = total_budget * 0.2
+        growth_countries_count = max(1, int(len(allocation_df) * 0.3))
+        growth_countries = allocation_df.iloc[core_countries_count : core_countries_count + growth_countries_count]
+        
+        suggestions += f"**2. Cơ hội Tăng trưởng (20% Ngân sách - ${growth_budget:,.0f})**\n"
+        if not growth_countries.empty:
+            suggestions += f"   - **Tập trung:** {growth_countries_count} quốc gia ({', '.join(growth_countries['Country'].tolist())})\n"
+            suggestions += f"   - **Lý do:** Các thị trường này cho thấy tiềm năng tăng trưởng cao.\n"
+            suggestions += f"   - **Hành động:** Đầu tư vào 5 sản phẩm tăng trưởng hàng đầu mỗi quốc gia.\n\n"
+        else:
+            suggestions += "   - Không tìm thấy quốc gia phù hợp cho danh mục này.\n\n"
 
-        # 2. Phân bổ linh hoạt phần còn lại
-        remaining_budget = total_budget - total_top2_budget
-        remaining_percentage = (remaining_budget / total_budget) * 100
-        remaining_countries = len(allocation_df) - 2
+        # 10% cho thử nghiệm
+        experimental_budget = total_budget * 0.1
+        experimental_countries = allocation_df.iloc[core_countries_count + growth_countries_count:]
 
-        suggestions += f"2. **Phân bổ linh hoạt sang các quốc gia khác để tránh phụ thuộc**\n"
-        if remaining_countries > 0:
-            suggestions += f"   • Tổng còn lại: **${remaining_budget:,.0f}** ({remaining_percentage:.1f}%) cho {remaining_countries} quốc gia\n"
-            suggestions += f"   • Mục tiêu: Đa dạng hóa danh mục, thăm dò thị trường, giảm thiểu rủi ro đơn điểm\n\n"
-
-        # 3. Phân bổ theo sản phẩm tăng trưởng
-        suggestions += f"3. **Ưu tiên phân bổ vốn cho sản phẩm có mức tăng trưởng cao hoặc doanh thu vượt trội**\n"
-        suggestions += f"   • Trong mỗi quốc gia, ngân sách sẽ chia theo tỉ lệ 30-10-60:\n"
-        suggestions += f"     - 30%: Sản phẩm chủ lực (hiệu suất cao, doanh thu ổn định)\n"
-        suggestions += f"     - 10%: Sản phẩm tiềm năng (có dấu hiệu tăng trưởng nhanh)\n"
-        suggestions += f"     - 60%: Các sản phẩm còn lại để thử nghiệm và giảm rủi ro\n\n"
-
-        # 4. Tái phân bổ linh hoạt
-        suggestions += f"4. **Cho phép tái phân bổ theo tín hiệu hiệu suất hoặc thị trường**\n"
-        suggestions += f"   • Theo dõi ROI và CAC định kỳ 2 tuần/lần\n"
-        suggestions += f"   • Nếu ROI < ngưỡng 110% trong 2 chu kỳ liên tiếp → tái phân bổ sang thị trường/sản phẩm hiệu quả hơn\n\n"
-
+        suggestions += f"**3. Thử nghiệm (10% Ngân sách - ${experimental_budget:,.0f})**\n"
+        if not experimental_countries.empty:
+            suggestions += f"   - **Tập trung:** {len(experimental_countries)} quốc gia ({', '.join(experimental_countries['Country'].tolist())})\n"
+            suggestions += f"   - **Lý do:** Để khám phá các cơ hội mới và đa dạng hóa danh mục đầu tư.\n"
+            suggestions += f"   - **Hành động:** Thử nghiệm các sản phẩm ngách tại các thị trường này.\n"
+        else:
+            suggestions += "   - Không tìm thấy quốc gia phù hợp cho danh mục này.\n"
+            
         return suggestions
 
 
     
     @staticmethod
     def _generate_detailed_forecast(allocation_df, total_budget, expected_roi, actual_roi, time_frame_months):
-        """Dự báo hiệu quả đầu tư theo chiến lược đã đề xuất"""
+        """Dự báo hiệu quả đầu tư dựa trên mô hình 70-20-10."""
+        forecast = "\n\n**📈 DỰ BÁO VÀ LỘ TRÌNH TRIỂN KHAI:**\n\n"
 
-        forecast = "\n\n**📈 DỰ BÁO HIỆU QUẢ THEO CHIẾN LƯỢC TẬP TRUNG VỐN:**\n\n"
-
-        # ROI giả định dựa trên chiến lược tập trung (ví dụ: +20%)
-        strategy_roi = actual_roi * 1.2
+        # Dự báo ROI
+        strategy_roi = actual_roi * 1.15  # Giả định tăng 15% ROI
         strategy_profit = total_budget * (strategy_roi / 100)
 
-        # ROI giả định nếu phân bổ đều (ví dụ: -15%)
-        equal_roi = actual_roi * 0.85
-        equal_profit = total_budget * (equal_roi / 100)
-        profit_diff = strategy_profit - equal_profit
+        forecast += f"**1. Dự báo tài chính:**\n"
+        forecast += f"   - **ROI dự kiến:** {strategy_roi:.1f}% (so với mục tiêu {expected_roi}%)\n"
+        forecast += f"   - **Lợi nhuận dự kiến:** ${strategy_profit:,.0f}\n"
+        forecast += f"   - **Thời gian hoàn vốn (ước tính):** {12 / (strategy_roi / 100):.1f} tháng\n\n"
 
-        forecast += f"• ROI kỳ vọng theo chiến lược tập trung: **{strategy_roi:.1f}%/quý** → Dự báo tăng hiệu suất 20% so với ROI thực tế {actual_roi:.1f}% nhờ ưu tiên thị trường và sản phẩm top\n\n "
-        forecast += f"• ROI nếu phân bổ đều: **{equal_roi:.1f}%/quý** → Ước tính giảm 15% hiệu suất do dàn trải vào cả thị trường/sản phẩm có điểm thấp hơn\n\n"
-        forecast += f"• Chênh lệch lợi nhuận: **+${profit_diff:,.0f}** chỉ trong 3 tháng\n\n"
-        forecast += f"• Lợi nhuận dự kiến tổng cộng: **${strategy_profit:,.0f}**\n\n"
+        # Lộ trình triển khai
+        forecast += f"**2. Lộ trình triển khai (3 tháng):**\n"
+        forecast += f"   - **Tháng 1:** Tập trung vào 70% thị trường cốt lõi. Tối ưu hóa các chiến dịch cho các sản phẩm hàng đầu.\n"
+        forecast += f"   - **Tháng 2:** Bắt đầu phân bổ 20% ngân sách cho các thị trường tăng trưởng. Theo dõi chặt chẽ các chỉ số hiệu suất.\n"
+        forecast += f"   - **Tháng 3:** Phân bổ 10% ngân sách còn lại cho các thử nghiệm. Đánh giá kết quả và điều chỉnh chiến lược cho quý tiếp theo.\n\n"
 
-        # Lộ trình triển khai (bám sát chiến lược trước)
-        forecast += f"📅 **LỘ TRÌNH TRIỂN KHAI:**\n"
-        forecast += f"• Tháng 1–2: Tập trung vốn vào thị trường có điểm cao (Eire)\n"
-        forecast += f"• Tháng 3: Mở rộng đầu tư sang thị trường #2 (Germany)\n"
-        forecast += f"• Tái phân bổ theo ROI: Nếu ROI < 33.8%/quý → chuyển vốn sang thị trường backup\n\n"
-
-        # Kết luận
-        forecast += f"💡 **KHUYẾN NGHỊ:**\n"
-        if strategy_roi > expected_roi:
-            forecast += f"✅ **TRIỂN KHAI NGAY** – Chiến lược dự kiến vượt ROI mục tiêu (**{expected_roi:.1f}%**) thêm **{strategy_roi - expected_roi:.1f}%**\n"
-        else:
-            forecast += f"⚠️ **XEM XÉT LẠI** – Dự kiến ROI chưa đạt mục tiêu (**{strategy_roi:.1f}% < {expected_roi:.1f}%)**\n"
+        # Rủi ro và giảm thiểu
+        forecast += f"**3. Rủi ro và giảm thiểu:**\n"
+        forecast += f"   - **Rủi ro:** Phụ thuộc quá nhiều vào một số ít thị trường cốt lõi.\n"
+        forecast += f"   - **Giảm thiểu:** Liên tục theo dõi các thị trường tăng trưởng và thử nghiệm để xác định các cơ hội mới.\n"
 
         return forecast
