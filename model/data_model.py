@@ -570,43 +570,43 @@ Dựa trên phân tích {len(allocation_df)} quốc gia, hệ thống đề xu�
     @staticmethod
 
     def _generate_detailed_investment_suggestions(allocation_df, total_budget, time_frame_months):
-        """Sinh khuyến nghị chiến lược đầu tư theo mô hình 70-20-10."""
-        suggestions = "\n\n**🎯 CHIẾN LƯỢC ĐẦU TƯ 70-20-10:**\n\n"
+        """Sinh khuyến nghị chiến lược đầu tư theo mô hình 70-20-10 dựa trên tiềm năng."""
+        suggestions = "\n\n**🎯 CHIẾN LƯỢC ĐẦU TƯ 70-20-10 THEO TIỀM NĂNG:**\n\n"
 
-        # 70% cho thị trường cốt lõi
+        # Phân loại quốc gia theo Investment_Potential
+        high_potential_countries = allocation_df[allocation_df['Investment_Potential'] == 'Cao']
+        medium_potential_countries = allocation_df[allocation_df['Investment_Potential'] == 'Trung Bình']
+        low_potential_countries = allocation_df[allocation_df['Investment_Potential'] == 'Thấp']
+
+        # 70% cho thị trường tiềm năng cao
         core_budget = total_budget * 0.7
-        core_countries_count = max(1, int(len(allocation_df) * 0.2))
-        core_countries = allocation_df.head(core_countries_count)
-
         suggestions += f"**1. Thị trường Cốt lõi (70% Ngân sách - ${core_budget:,.0f})**\n"
-        suggestions += f"   - **Tập trung:** {core_countries_count} quốc gia ({', '.join(core_countries['Country'].tolist())})\n"
-        suggestions += f"   - **Lý do:** Đây là các thị trường đã được chứng minh hiệu quả, có hiệu suất cao.\n"
-        suggestions += f"   - **Hành động:** Tập trung vào 3 sản phẩm hàng đầu cho mỗi quốc gia trong phân khúc này.\n\n"
+        if not high_potential_countries.empty:
+            suggestions += f"   - **Tập trung:** {len(high_potential_countries)} quốc gia ({', '.join(high_potential_countries['Country'].tolist())})\n"
+            suggestions += f"   - **Lý do:** Các thị trường này có điểm đánh giá tổng thể cao, cho thấy tiềm năng lợi nhuận và sự ổn định tốt nhất.\n"
+            suggestions += f"   - **Hành động:** Tối đa hóa đầu tư vào các sản phẩm chủ lực và phát triển các kênh marketing hiệu quả tại đây.\n\n"
+        else:
+            suggestions += "   - Không có quốc gia nào được xếp hạng có tiềm năng cao.\n\n"
 
-        # 20% cho thị trường tăng trưởng
+        # 20% cho thị trường tiềm năng trung bình
         growth_budget = total_budget * 0.2
-        growth_countries_count = max(1, int(len(allocation_df) * 0.3))
-        growth_countries = allocation_df.iloc[core_countries_count : core_countries_count + growth_countries_count]
-        
         suggestions += f"**2. Cơ hội Tăng trưởng (20% Ngân sách - ${growth_budget:,.0f})**\n"
-        if not growth_countries.empty:
-            suggestions += f"   - **Tập trung:** {growth_countries_count} quốc gia ({', '.join(growth_countries['Country'].tolist())})\n"
-            suggestions += f"   - **Lý do:** Các thị trường này cho thấy tiềm năng tăng trưởng cao.\n"
-            suggestions += f"   - **Hành động:** Đầu tư vào 5 sản phẩm tăng trưởng hàng đầu mỗi quốc gia.\n\n"
+        if not medium_potential_countries.empty:
+            suggestions += f"   - **Tập trung:** {len(medium_potential_countries)} quốc gia ({', '.join(medium_potential_countries['Country'].tolist())})\n"
+            suggestions += f"   - **Lý do:** Các thị trường này có các chỉ số ở mức khá, có thể trở thành thị trường cốt lõi nếu được đầu tư đúng cách.\n"
+            suggestions += f"   - **Hành động:** Đầu tư có chọn lọc vào các sản phẩm có tốc độ tăng trưởng tốt, theo dõi và đánh giá lại sau mỗi quý.\n\n"
         else:
-            suggestions += "   - Không tìm thấy quốc gia phù hợp cho danh mục này.\n\n"
+            suggestions += "   - Không có quốc gia nào được xếp hạng có tiềm năng trung bình.\n\n"
 
-        # 10% cho thử nghiệm
+        # 10% cho thị trường tiềm năng thấp
         experimental_budget = total_budget * 0.1
-        experimental_countries = allocation_df.iloc[core_countries_count + growth_countries_count:]
-
-        suggestions += f"**3. Thử nghiệm (10% Ngân sách - ${experimental_budget:,.0f})**\n"
-        if not experimental_countries.empty:
-            suggestions += f"   - **Tập trung:** {len(experimental_countries)} quốc gia ({', '.join(experimental_countries['Country'].tolist())})\n"
-            suggestions += f"   - **Lý do:** Để khám phá các cơ hội mới và đa dạng hóa danh mục đầu tư.\n"
-            suggestions += f"   - **Hành động:** Thử nghiệm các sản phẩm ngách tại các thị trường này.\n"
+        suggestions += f"**3. Thử nghiệm & Duy trì (10% Ngân sách - ${experimental_budget:,.0f})**\n"
+        if not low_potential_countries.empty:
+            suggestions += f"   - **Tập trung:** {len(low_potential_countries)} quốc gia ({', '.join(low_potential_countries['Country'].tolist())})\n"
+            suggestions += f"   - **Lý do:** Các thị trường này có điểm số thấp, rủi ro cao hơn. Ngân sách được dùng để duy trì sự hiện diện hoặc thử nghiệm các chiến lược mới với chi phí thấp.\n"
+            suggestions += f"   - **Hành động:** Đầu tư tối thiểu để duy trì hoạt động hoặc thử nghiệm các sản phẩm/kênh marketing hoàn toàn mới để tìm kiếm cơ hội đột phá.\n"
         else:
-            suggestions += "   - Không tìm thấy quốc gia phù hợp cho danh mục này.\n"
+            suggestions += "   - Không có quốc gia nào được xếp hạng có tiềm năng thấp.\n"
             
         return suggestions
 
@@ -614,27 +614,37 @@ Dựa trên phân tích {len(allocation_df)} quốc gia, hệ thống đề xu�
     
     @staticmethod
     def _generate_detailed_forecast(allocation_df, total_budget, expected_roi, actual_roi, time_frame_months):
-        """Dự báo hiệu quả đầu tư dựa trên mô hình 70-20-10."""
-        forecast = "\n\n**📈 DỰ BÁO VÀ LỘ TRÌNH TRIỂN KHAI:**\n\n"
+        """Dự báo hiệu quả đầu tư, so sánh giữa phân bổ mặc định và chiến lược 70-20-10."""
+        forecast = "\n\n**📈 DỰ BÁO VÀ SO SÁNH HIỆU QUẢ:**\n\n"
 
-        # Dự báo ROI
-        strategy_roi = actual_roi * 1.15  # Giả định tăng 15% ROI
+        # --- Dữ liệu cho Phân bổ Mặc định (dựa trên điểm số) ---
+        default_profit = allocation_df['Expected_Profit'].sum()
+        default_roi = (default_profit / total_budget) * 100 if total_budget > 0 else 0
+
+        # --- Dữ liệu cho Phân bổ theo Chiến lược 70-20-10 ---
+        # Giả định chiến lược mới giúp tăng ROI thêm 15% so với phân bổ mặc định
+        strategy_roi = default_roi * 1.15
         strategy_profit = total_budget * (strategy_roi / 100)
 
-        forecast += f"**1. Dự báo tài chính:**\n"
-        forecast += f"   - **ROI dự kiến:** {strategy_roi:.1f}% (so với mục tiêu {expected_roi}%)\n"
-        forecast += f"   - **Lợi nhuận dự kiến:** ${strategy_profit:,.0f}\n"
-        forecast += f"   - **Thời gian hoàn vốn (ước tính):** {12 / (strategy_roi / 100):.1f} tháng\n\n"
+        # --- Tạo bảng so sánh ---
+        forecast += "**1. So sánh Hiệu quả Đầu tư:**\n\n"
+        forecast += "| Chỉ số | Phân bổ Mặc định (Theo Điểm) | Phân bổ Chiến lược (70-20-10) | Thay đổi |\n"
+        forecast += "|:---|:---:|:---:|:---:|\n"
+        forecast += f"| **Lợi nhuận Dự kiến** | ${default_profit:,.0f} | **${strategy_profit:,.0f}** | **+${(strategy_profit - default_profit):,.0f}** |\n"
+        forecast += f"| **ROI Dự kiến** | {default_roi:.1f}% | **{strategy_roi:.1f}%** | **+{strategy_roi - default_roi:.1f}%** |\n"
+        forecast += f"| **Thời gian Hoàn vốn** | {12 / (default_roi / 100) if default_roi > 0 else 'N/A'} tháng | **{12 / (strategy_roi / 100) if strategy_roi > 0 else 'N/A'} tháng** | Nhanh hơn |\n\n"
+
+        forecast += "**Logic:** *Việc áp dụng chiến lược 70-20-10 giúp tập trung nguồn lực vào các thị trường có tiềm năng cao nhất, tối ưu hóa cơ hội tăng trưởng và giảm rủi ro ở các thị trường không chắc chắn. Điều này được dự báo sẽ làm tăng hiệu quả sử dụng vốn, dẫn đến ROI và lợi nhuận cao hơn.*\n\n"
 
         # Lộ trình triển khai
         forecast += f"**2. Lộ trình triển khai (3 tháng):**\n"
-        forecast += f"   - **Tháng 1:** Tập trung vào 70% thị trường cốt lõi. Tối ưu hóa các chiến dịch cho các sản phẩm hàng đầu.\n"
-        forecast += f"   - **Tháng 2:** Bắt đầu phân bổ 20% ngân sách cho các thị trường tăng trưởng. Theo dõi chặt chẽ các chỉ số hiệu suất.\n"
-        forecast += f"   - **Tháng 3:** Phân bổ 10% ngân sách còn lại cho các thử nghiệm. Đánh giá kết quả và điều chỉnh chiến lược cho quý tiếp theo.\n\n"
+        forecast += f"   - **Tháng 1:** Tập trung vào 70% thị trường cốt lõi (tiềm năng cao). Tối ưu hóa các chiến dịch cho các sản phẩm hàng đầu.\n"
+        forecast += f"   - **Tháng 2:** Bắt đầu phân bổ 20% ngân sách cho các thị trường tăng trưởng (tiềm năng trung bình). Theo dõi chặt chẽ các chỉ số hiệu suất.\n"
+        forecast += f"   - **Tháng 3:** Phân bổ 10% ngân sách còn lại cho các thử nghiệm (tiềm năng thấp). Đánh giá kết quả và điều chỉnh chiến lược cho quý tiếp theo.\n\n"
 
         # Rủi ro và giảm thiểu
         forecast += f"**3. Rủi ro và giảm thiểu:**\n"
-        forecast += f"   - **Rủi ro:** Phụ thuộc quá nhiều vào một số ít thị trường cốt lõi.\n"
-        forecast += f"   - **Giảm thiểu:** Liên tục theo dõi các thị trường tăng trưởng và thử nghiệm để xác định các cơ hội mới.\n"
+        forecast += f"   - **Rủi ro:** Phụ thuộc quá nhiều vào một số ít thị trường cốt lõi. Các thị trường tiềm năng trung bình có thể không tăng trưởng như kỳ vọng.\n"
+        forecast += f"   - **Giảm thiểu:** Liên tục theo dõi các chỉ số của tất cả các nhóm thị trường. Sẵn sàng điều chỉnh lại ngân sách nếu thị trường tăng trưởng không hiệu quả và chuyển vốn cho thị trường cốt lõi hoặc các thử nghiệm mới hứa hẹn hơn.\n"
 
         return forecast
